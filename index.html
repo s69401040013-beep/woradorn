@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)https://s67301040127-dotcom.github.io/Paphonsan/ -->
+<html lang="th"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Breaker Trip Monitoring System</title>
+    <!-- Chart.js สำหรับแสดงกราฟ -->
+    <script src="./Smart Breaker Trip Monitoring System_files/chart.js.download"></script>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --success-color: #2ec4b6;
+            --danger-color: #e63946;
+            --warning-color: #ff9f1c;
+        }
+
+        body {
+            font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #1d3557;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .status-normal { background-color: #d4edda; color: #155724; }
+        .status-trip { background-color: #f8d7da; color: #721c24; }
+
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1d3557;
+        }
+
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 5px solid var(--warning-color);
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .btn-sim {
+            background-color: #457b9d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-sim:hover {
+            background-color: #1d3557;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚡ ระบบเฝ้าระวังเบรกเกอร์ไฟฟ้าอัจฉริยะ</h1>
+        <p>Smart Breaker Trip Diagnostic &amp; Monitoring System</p>
+    </header>
+
+    <!-- แสดงสถานะวงจรย่อย -->
+    <div class="dashboard-grid">
+        <!-- วงจรที่ 1: เครื่องปรับอากาศ -->
+        <div class="card" id="zone1">
+            <div class="card-header">
+                <h3>โซน 1: เครื่องปรับอากาศ</h3>
+                <span class="status-badge status-normal" id="status1">ปกติ</span>
+            </div>
+            <div class="metrics">
+                <div class="metric-item">
+                    <div>กระแสไฟฟ้า</div>
+                    <div class="metric-value" id="current1">8.5 A</div>
+                </div>
+                <div class="metric-item">
+                    <div>กระแสไฟรั่ว</div>
+                    <div class="metric-value" id="leak1">1.2 mA</div>
+                </div>
+            </div>
+            <div class="alert-box" id="alert1"></div>
+            <button class="btn-sim" onclick="simulateTrip(&#39;zone1&#39;, &#39;Overload&#39;, &#39;กระแสเกินพิกัด (18.5A) เป็นเวลานาน&#39;)">จำลอง: กระแสเกิน (Overload)</button>
+        </div>
+
+        <!-- วงจรที่ 2: ปลั๊กไฟห้องครัว -->
+        <div class="card" id="zone2">
+            <div class="card-header">
+                <h3>โซน 2: ปลั๊กไฟห้องครัว</h3>
+                <span class="status-badge status-normal" id="status2">ปกติ</span>
+            </div>
+            <div class="metrics">
+                <div class="metric-item">
+                    <div>กระแสไฟฟ้า</div>
+                    <div class="metric-value" id="current2">3.2 A</div>
+                </div>
+                <div class="metric-item">
+                    <div>กระแสไฟรั่ว</div>
+                    <div class="metric-value" id="leak2">0.5 mA</div>
+                </div>
+            </div>
+            <div class="alert-box" id="alert2"></div>
+            <button class="btn-sim" onclick="simulateTrip(&#39;zone2&#39;, &#39;Earth Leakage&#39;, &#39;ตรวจพบไฟรั่วลงดิน (&gt;15mA)&#39;)">จำลอง: ไฟรั่ว (Leakage)</button>
+        </div>
+
+        <!-- วงจรที่ 3: แสงสว่างชั้นล่าง -->
+        <div class="card" id="zone3">
+            <div class="card-header">
+                <h3>โซน 3: แสงสว่างชั้นล่าง</h3>
+                <span class="status-badge status-normal" id="status3">ปกติ</span>
+            </div>
+            <div class="metrics">
+                <div class="metric-item">
+                    <div>กระแสไฟฟ้า</div>
+                    <div class="metric-value" id="current3">1.1 A</div>
+                </div>
+                <div class="metric-item">
+                    <div>กระแสไฟรั่ว</div>
+                    <div class="metric-value" id="leak3">0.1 mA</div>
+                </div>
+            </div>
+            <div class="alert-box" id="alert3"></div>
+            <button class="btn-sim" onclick="simulateTrip(&#39;zone3&#39;, &#39;Short Circuit&#39;, &#39;กระแสพุ่งสูงฉับพลัน ลัดวงจร!&#39;)">จำลอง: ไฟฟ้าลัดวงจร</button>
+        </div>
+    </div>
+
+    <!-- กราฟกระแสไฟฟ้าแบบเรียลไทม์ -->
+    <div class="chart-section">
+        <h3>📊 กราฟตรวจจับกระแสไฟฟ้ารวม (Real-time Current Load)</h3>
+        <canvas id="currentChart" height="353" style="display: block; box-sizing: border-box; height: 353.3px; width: 1060px;" width="1060"></canvas>
+    </div>
+</div>
+
+<script>
+    // ตั้งค่า Chart.js สำหรับกราฟ
+    const ctx = document.getElementById('currentChart').getContext('2d');
+    const chartData = {
+        labels: [],
+        datasets: [{
+            label: 'กระแสไฟฟ้ารวม (Ampere)',
+            data: [],
+            borderColor: '#e63946',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3
+        }]
+    };
+
+    const currentChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            scales: {
+                x: { title: { display: true, text: 'เวลา' } },
+                y: { title: { display: true, text: 'กระแส (A)' }, beginAtZero: true }
+            }
+        }
+    });
+
+    // จำลองการอัปเดตข้อมูลกราฟทุกๆ 2 วินาที
+    let timeIndex = 0;
+    setInterval(() => {
+        const now = new Date();
+        const timeStr = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+        
+        // สุ่มค่ากระแสไฟฟ้าจำลอง
+        const randomCurrent = (12 + Math.random() * 2).toFixed(1);
+
+        if (chartData.labels.length > 10) {
+            chartData.labels.shift();
+            chartData.datasets[0].data.shift();
+        }
+
+        chartData.labels.push(timeStr);
+        chartData.datasets[0].data.push(randomCurrent);
+        currentChart.update();
+    }, 2000);
+
+    // ฟังก์ชันจำลองการทริปของเบรกเกอร์
+    function simulateTrip(zoneId, cause, detail) {
+        const zoneNum = zoneId.replace('zone', '');
+        const statusBadge = document.getElementById(`status${zoneNum}`);
+        const alertBox = document.getElementById(`alert${zoneNum}`);
+        const currentVal = document.getElementById(`current${zoneNum}`);
+
+        // เปลี่ยนสถานะ UI เป็นทริป
+        statusBadge.textContent = "TRIPPED!";
+        statusBadge.className = "status-badge status-trip";
+        
+        currentVal.textContent = "0.0 A";
+
+        // แสดงกล่องข้อความเตือนสาเหตุ
+        alertBox.style.display = "block";
+        alertBox.innerHTML = `⚠️ <strong>สาเหตุการทริป:</strong> ${cause}<br><small>${detail}</small>`;
+    }
+</script>
+
+
+</body></html>
